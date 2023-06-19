@@ -17,7 +17,7 @@ TARGET_VALUE = math.sqrt(2)
 
 def main():
     results = [2 * taylor_series_sen_x(X, test_case) for test_case in N_TEST_CASES]
-    errors = [get_error(result, TARGET_VALUE) for result in results]
+    errors = [get_relative_error(result, TARGET_VALUE) for result in results]
     
     # Resposta (a)
     print("Resposta (a) com 20 casas decimais")
@@ -49,7 +49,6 @@ def main():
     axis.set_xlabel("x")
     axis.set_ylabel("f (x)")
 
-    #axis.xaxis.set_major_formatter(tck.StrMethodFormatter("x/np.pi"))
     axis.xaxis.set_major_locator(tck.MultipleLocator(np.pi / 2))
     axis.xaxis.set_minor_locator(tck.MultipleLocator(np.pi / 4))
     axis.xaxis.set_major_formatter(plt.FuncFormatter(pi_formatter.multiple_formatter()))
@@ -63,17 +62,54 @@ def main():
     figure = plt.figure("Exercício 1c")
     axis = figure.add_subplot(111)
 
-    
+    axis.plot(
+        x_axis,
+        np.absolute(np.sin(x_axis) - taylor_vec(x_axis, N_TEST_CASES[0])),
+        "#ff0000",
+        label="$E_{5}$"
+    )
+    axis.plot(
+        x_axis,
+        np.absolute(np.sin(x_axis) - taylor_vec(x_axis, N_TEST_CASES[1])),
+        "#00ff00",
+        label="$E_{10}$"
+    )
+    axis.plot(
+        x_axis,
+        np.absolute(
+            np.sin(x_axis) - taylor_vec(x_axis, N_TEST_CASES[2]),
+        ),
+        "#0000ff",
+        label="$E_{100}$"
+    )
 
+    # Dá título aos eixos e ao gráfico
+    axis.set_title("Erros nas estimativas de sen(x)")
+    axis.set_xlabel("x")
+    axis.set_ylabel("E (x)")
+
+    axis.xaxis.set_major_locator(tck.MultipleLocator(np.pi / 2))
+    axis.xaxis.set_minor_locator(tck.MultipleLocator(np.pi / 4))
+    axis.xaxis.set_major_formatter(plt.FuncFormatter(pi_formatter.multiple_formatter()))
+
+    # Coloca eixo y em escala logarítmica
+    axis.set_yscale("log")
+    
+    # Coloca legenda
+    axis.legend()
+
+    #plt.show()
+
+    figure.savefig("Exercício 1c.png")
 
 
 # Calcula o polinômio de Taylor que aproxima sen(x) de grau n no ponto x
 def taylor_series_sen_x(x: float, n: int) -> float:
-    return sum([math.pow(-1, k) * math.pow(x, 2 * k + 1) / gmpy2.fac(2 * k + 1) for k in range(n + 1)])
+    return sum([np.power(-1, k) * np.power(x, 2 * k + 1) / gmpy2.fac(2 * k + 1) for k in range(n + 1)])
 
 
 # Calcula o erro relativo percentual
-def get_error(estimate: float, real_value: float) -> float:
+def get_relative_error(estimate: float, real_value: float) -> float:
     return (real_value - estimate) / real_value * 100
 
 
