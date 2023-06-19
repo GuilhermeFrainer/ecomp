@@ -5,9 +5,11 @@ import math
 import gmpy2 # Usado pois math.factorial dá overflow ao converter int para float
 from tabulate import tabulate
 
+
 X = math.pi / 4
 N_TEST_CASES = [5, 10, 100]
 TARGET_VALUE = math.sqrt(2)
+
 
 def main():
     results = [2 * taylor_series_sen_x(X, test_case) for test_case in N_TEST_CASES]
@@ -33,10 +35,10 @@ def main():
     figure = plt.figure()
     axis = figure.add_subplot(111)
 
-    axis.plot(x_axis, np.sin(x_axis), '#000000', label="sen(x)")
-    axis.plot(x_axis, taylor_vec(x_axis, N_TEST_CASES[0]), '#ff0000', label="P5(x)")
-    axis.plot(x_axis, taylor_vec(x_axis, N_TEST_CASES[1]), '#00ff00', label="P10(x)")
-    axis.plot(x_axis, taylor_vec(x_axis, N_TEST_CASES[2]), '#0000ff', label="P100(x)")
+    axis.plot(x_axis, np.sin(x_axis), '#000000', label="$sen(x)$")
+    axis.plot(x_axis, taylor_vec(x_axis, N_TEST_CASES[0]), '#ff0000', label="$P_{5}(x)$")
+    axis.plot(x_axis, taylor_vec(x_axis, N_TEST_CASES[1]), '#00ff00', label="$P_{10}(x)$")
+    axis.plot(x_axis, taylor_vec(x_axis, N_TEST_CASES[2]), '#0000ff', label="$P_{100}(x)$")
 
     # Dá título aos eixos e ao gráfico
     axis.set_title("Polinômio de Taylor que aproxima sen(x)")
