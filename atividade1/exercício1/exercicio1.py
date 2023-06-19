@@ -1,9 +1,13 @@
-import matplotlib
+# Arquivos externos
 import matplotlib.pyplot as plt
+import matplotlib.ticker as tck
 import numpy as np
 import math
 import gmpy2 # Usado pois math.factorial dá overflow ao converter int para float
 from tabulate import tabulate
+
+# Arquivos internos
+import pi_formatter
 
 
 X = math.pi / 4
@@ -30,9 +34,9 @@ def main():
     # Vetoriza a função, para que possa receber um array como argumento
     taylor_vec = np.vectorize(taylor_series_sen_x)
     
-    x_axis = np.arange(-math.pi, math.pi, 0.01)
+    x_axis = np.arange(-np.pi, np.pi, 0.01)
     
-    figure = plt.figure()
+    figure = plt.figure("Exercício 1b")
     axis = figure.add_subplot(111)
 
     axis.plot(x_axis, np.sin(x_axis), '#000000', label="$sen(x)$")
@@ -45,10 +49,22 @@ def main():
     axis.set_xlabel("x")
     axis.set_ylabel("f (x)")
 
+    #axis.xaxis.set_major_formatter(tck.StrMethodFormatter("x/np.pi"))
+    axis.xaxis.set_major_locator(tck.MultipleLocator(np.pi / 2))
+    axis.xaxis.set_minor_locator(tck.MultipleLocator(np.pi / 4))
+    axis.xaxis.set_major_formatter(plt.FuncFormatter(pi_formatter.multiple_formatter()))
+
     # Coloca legenda
     axis.legend()
 
     figure.savefig("Exercício 1b.png")
+
+    # Resposta (c)
+    figure = plt.figure("Exercício 1c")
+    axis = figure.add_subplot(111)
+
+    
+
 
 
 # Calcula o polinômio de Taylor que aproxima sen(x) de grau n no ponto x
