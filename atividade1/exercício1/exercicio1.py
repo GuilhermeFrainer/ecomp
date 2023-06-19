@@ -1,4 +1,5 @@
 import matplotlib
+import matplotlib.pyplot as plt
 import numpy as np
 import math
 import gmpy2 # Usado pois math.factorial dá overflow ao converter int para float
@@ -22,7 +23,30 @@ def main():
         headers="keys",
         floatfmt=".20f"
         ))
-    # TODO: Calcular erro percentual relativo
+    
+    # Resposta (b)
+    # Vetoriza a função, para que possa receber um array como argumento
+    taylor_vec = np.vectorize(taylor_series_sen_x)
+    
+    x_axis = np.arange(-math.pi, math.pi, 0.01)
+    
+    figure = plt.figure()
+    axis = figure.add_subplot(111)
+
+    axis.plot(x_axis, np.sin(x_axis), '#000000', label="sen(x)")
+    axis.plot(x_axis, taylor_vec(x_axis, N_TEST_CASES[0]), '#ff0000', label="P5(x)")
+    axis.plot(x_axis, taylor_vec(x_axis, N_TEST_CASES[1]), '#00ff00', label="P10(x)")
+    axis.plot(x_axis, taylor_vec(x_axis, N_TEST_CASES[2]), '#0000ff', label="P100(x)")
+
+    # Dá título aos eixos e ao gráfico
+    axis.set_title("Polinômio de Taylor que aproxima sen(x)")
+    axis.set_xlabel("x")
+    axis.set_ylabel("f (x)")
+
+    # Coloca legenda
+    axis.legend()
+
+    figure.savefig("Exercício 1b.png")
 
 
 # Calcula o polinômio de Taylor que aproxima sen(x) de grau n no ponto x
