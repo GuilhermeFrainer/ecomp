@@ -17,10 +17,15 @@ def main():
     p = poly.Polynomial([-3, 0, -3, 0, 1])
 
     # Resposta (a)
-    plot_chart(x, p)
+    plot_function_chart(x, p)
 
     # Resposta (b)
-    fixed_point_roots = roots_by_fixed_point(True)
+    fixed_point_roots = roots_by_fixed_point()
+    plot_convergence_chart(fixed_point_roots)
+
+    # Faz o mesmo gráfico para a raiz negativa
+    #negative_roots = np.array([-x for x in fixed_point_roots])
+    #plot_convergence_chart(negative_roots)
 
     # Resposta (c)
     # Calcula as raízes do polinômio com ferramentas no numpy
@@ -42,7 +47,7 @@ def target_function(x: np.ndarray):
 
 
 # Faz gráfico da função
-def plot_chart(x: np.ndarray, func):
+def plot_function_chart(x: np.ndarray, func):
     figure = plt.figure("Exercício 2a")
     axis = figure.add_subplot(111)
 
@@ -79,11 +84,8 @@ def plot_chart(x: np.ndarray, func):
 # Calcula as raízes da função por ponto fixo
 # Usa g(x) = ± (3x^2 + 3)^1/4
 # Uma raiz vai ser positiva, a outra, negativa
-def roots_by_fixed_point(positive: bool) -> np.ndarray:
-    if positive:
-        func = lambda x: math.pow(3 * math.pow(x, 2) + 3, 1/4)
-    else:
-        func = lambda x: -math.pow(3 * math.pow(x, 2) + 3, 1/4)
+def roots_by_fixed_point() -> np.ndarray:
+    func = lambda x: math.pow(3 * math.pow(x, 2) + 3, 1/4)
 
     # Preparação para o algoritmo
     x  = np.array([INITIAL_CONDITION], dtype=np.float64) # Array que será retornado
@@ -97,7 +99,33 @@ def roots_by_fixed_point(positive: bool) -> np.ndarray:
         if abs(x[i] - x[i - 1]) < MAX_ERROR:
             print(f"Iterações até convergir: {i}")
             return x
+            
         i += 1
+
+
+# Desenha gráfico de convergência do método do ponto fixo
+def plot_convergence_chart(fixed_point_roots: np.ndarray):
+    figure = plt.figure("Exercício 2b")
+    axis = figure.add_subplot(211)
+
+    axis.set_xlabel("x")
+    axis.set_ylabel("g (x)")
+
+    axis.plot(fixed_point_roots[:-1], fixed_point_roots[1:], 's')
+
+    # Faz o mesmo gráfico para a raiz negativa
+    neg_axis = figure.add_subplot(212)
+
+    axis.set_label("x")
+    axis.set_ylabel("g (x)")
+
+    # Converte as estimativas de raízes para seu oposto
+    # Isso pode ser feito devido ao polinômio escolhido
+    negative_roots = np.array([-x for x in fixed_point_roots])
+
+    neg_axis.plot(negative_roots[:-1], negative_roots[1:], 's', color="#ff0000")
+
+    figure.savefig("Exercício 2b.png")
 
 
 if __name__ == "__main__":
