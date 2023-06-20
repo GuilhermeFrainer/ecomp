@@ -28,13 +28,18 @@ def main():
     #plot_convergence_chart(negative_roots)
 
     # Resposta (c)
+    # Coloca raízes numa lista
+    estimated_roots = [-fixed_point_roots[-1], fixed_point_roots[-1]]
+    
     # Calcula as raízes do polinômio com ferramentas no numpy
+    # Considerou-se "Polynomial.roots()" o equivalente do "fzero()" no MATLAB
     roots = p.roots()
     # Filtra raízes complexas
-    real_roots = roots[~np.iscomplex(roots)]
-    real_roots = np.real(real_roots)
+    numpy_roots = roots[~np.iscomplex(roots)]
+    numpy_roots = np.real(numpy_roots)
     print(tabulate({
-        "Raízes": real_roots,
+        "Raízes numpy": numpy_roots,
+        "Raízes estimadas": estimated_roots,
         },
         headers="keys",
         floatfmt=".5f"
@@ -92,9 +97,7 @@ def roots_by_fixed_point() -> np.ndarray:
     i = 1
 
     while i < MAX_ITERATIONS:
-        new_value = func(x[i - 1])
-        print(new_value)
-        x = np.append(x, new_value)
+        x = np.append(x, func(x[i - 1]))
         
         if abs(x[i] - x[i - 1]) < MAX_ERROR:
             print(f"Iterações até convergir: {i}")
