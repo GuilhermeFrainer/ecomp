@@ -5,9 +5,11 @@ import numpy as np
 import math
 import gmpy2 # Usado pois math.factorial dá overflow ao converter int para float
 from tabulate import tabulate
+from decimal import Decimal
 
 # Arquivos internos
 import pi_formatter
+import helper_sin as hs
 
 
 X = math.pi / 4
@@ -59,26 +61,35 @@ def main():
     figure.savefig("Exercício 1b.png")
 
     # Resposta (c)
+    # Converte array para tipo "Decimal" para maior precisão
+    x_decimal = np.array([Decimal(x) for x in x_axis], dtype=Decimal)
+    
     figure = plt.figure("Exercício 1c")
     axis = figure.add_subplot(111)
 
+    # Popula array com valores de seno
+    sin_of_x = np.array([hs.sin(x) for x in x_decimal])
+
+    # Popula arrays com aproximações feitas pelo polinômio de Taylor
+    p5_values = np.array([taylor_series_sen_x_decimal(x, N_TEST_CASES[0]) for x in x_decimal], dtype=Decimal)
+    p10_values = np.array([taylor_series_sen_x_decimal(x, N_TEST_CASES[1]) for x in x_decimal], dtype=Decimal)
+    p100_values = np.array([taylor_series_sen_x_decimal(x, N_TEST_CASES[2]) for x in x_decimal], dtype=Decimal)
+
     axis.plot(
-        x_axis,
-        np.absolute(np.sin(x_axis) - taylor_vec(x_axis, N_TEST_CASES[0])),
+        x_decimal,
+        abs(sin_of_x - p5_values),
         "#ff0000",
         label="$E_{5}$"
     )
     axis.plot(
-        x_axis,
-        np.absolute(np.sin(x_axis) - taylor_vec(x_axis, N_TEST_CASES[1])),
+        x_decimal,
+        abs(sin_of_x - p10_values),
         "#00ff00",
         label="$E_{10}$"
     )
     axis.plot(
-        x_axis,
-        np.absolute(
-            np.sin(x_axis) - taylor_vec(x_axis, N_TEST_CASES[2]),
-        ),
+        x_decimal,
+        abs(sin_of_x - p100_values),
         "#0000ff",
         label="$E_{100}$"
     )
@@ -106,6 +117,16 @@ def main():
 # Calcula o polinômio de Taylor que aproxima sen(x) de grau n no ponto x
 def taylor_series_sen_x(x: float, n: int) -> float:
     return sum([np.power(-1, k) * np.power(x, 2 * k + 1) / gmpy2.fac(2 * k + 1) for k in range(n + 1)])
+
+
+# Calcula o polinômio de Taylor que aproxima sen(x) de grau n no ponto x, mas para a classe "Decimal"
+def taylor_series_sen_x_decimal(x: Decimal, n: int) -> Decimal:
+    sum = 0
+    for i in range(n + 1):
+        nominator = np.power(-1, i) * np.power(x, 2 * i + 1)
+        denominator = Decimal(math.factorial(2 * i + 1))
+        sum += nominator / denominator
+    return sum
 
 
 # Calcula o erro relativo percentual
