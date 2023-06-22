@@ -20,19 +20,15 @@ def main():
     plot_function_chart(x, p)
 
     # Resposta (b)
-    fixed_point_roots = roots_by_fixed_point()
-    plot_convergence_chart(fixed_point_roots)
-
-    # Faz o mesmo gráfico para a raiz negativa
-    #negative_roots = np.array([-x for x in fixed_point_roots])
-    #plot_convergence_chart(negative_roots)
+    fixed_point_roots, iterations = roots_by_fixed_point()
+    plot_convergence_chart(fixed_point_roots, iterations)
 
     # Resposta (c)
     # Coloca raízes numa lista
     estimated_roots = [-fixed_point_roots[-1], fixed_point_roots[-1]]
     
     # Calcula as raízes do polinômio com ferramentas no numpy
-    # Considerou-se "Polynomial.roots()" o equivalente do "fzero()" no MATLAB
+    # Considerou-se "Polynomial.roots()" o equivalente do "fzero()" do MATLAB
     roots = p.roots()
     # Filtra raízes complexas
     numpy_roots = roots[~np.iscomplex(roots)]
@@ -88,33 +84,35 @@ def plot_function_chart(x: np.ndarray, func):
 
 # Calcula as raízes da função por ponto fixo
 # Usa g(x) = ± (3x^2 + 3)^1/4
-# Uma raiz vai ser positiva, a outra, negativa
-def roots_by_fixed_point() -> np.ndarray:
+# Função simétrica
+def roots_by_fixed_point() -> tuple[np.ndarray, list[int]]:
     func = lambda x: math.pow(3 * math.pow(x, 2) + 3, 1/4)
 
     # Preparação para o algoritmo
     x  = np.array([INITIAL_CONDITION], dtype=np.float64) # Array que será retornado
     i = 1
+    iteration_list = [0, i]
 
     while i < MAX_ITERATIONS:
         x = np.append(x, func(x[i - 1]))
         
         if abs(x[i] - x[i - 1]) < MAX_ERROR:
             print(f"Iterações até convergir: {i}")
-            return x
+            return x, iteration_list
             
         i += 1
+        iteration_list.append(i)
 
 
 # Desenha gráfico de convergência do método do ponto fixo
-def plot_convergence_chart(fixed_point_roots: np.ndarray):
+def plot_convergence_chart(fixed_point_roots: np.ndarray, iterations: list[int]):
     figure = plt.figure("Exercício 2b")
     axis = figure.add_subplot(211)
 
     axis.set_xlabel("x")
     axis.set_ylabel("g (x)")
 
-    axis.plot(fixed_point_roots[:-1], fixed_point_roots[1:], 's')
+    axis.plot(iterations, fixed_point_roots, 's')
 
     # Faz o mesmo gráfico para a raiz negativa
     neg_axis = figure.add_subplot(212)
@@ -123,10 +121,10 @@ def plot_convergence_chart(fixed_point_roots: np.ndarray):
     axis.set_ylabel("g (x)")
 
     # Converte as estimativas de raízes para seu oposto
-    # Isso pode ser feito devido ao polinômio escolhido
+    # Isso pode ser feito pois a função escolhida é simétrica
     negative_roots = np.array([-x for x in fixed_point_roots])
 
-    neg_axis.plot(negative_roots[:-1], negative_roots[1:], 's', color="#ff0000")
+    neg_axis.plot(iterations, negative_roots, 's', color="#ff0000")
 
     figure.savefig("Exercício 2b.png")
 
