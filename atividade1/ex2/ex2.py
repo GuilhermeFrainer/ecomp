@@ -109,7 +109,6 @@ def plot_convergence_chart(fixed_point_roots: np.ndarray, iterations: list[int])
     figure = plt.figure("Exercício 2b")
     axis = figure.add_subplot(211)
 
-    axis.set_xlabel("x")
     axis.set_ylabel("g (x)")
 
     axis.plot(iterations, fixed_point_roots, 's')
@@ -117,8 +116,8 @@ def plot_convergence_chart(fixed_point_roots: np.ndarray, iterations: list[int])
     # Faz o mesmo gráfico para a raiz negativa
     neg_axis = figure.add_subplot(212)
 
-    axis.set_label("x")
-    axis.set_ylabel("g (x)")
+    neg_axis.set_xlabel("Iterações")
+    neg_axis.set_ylabel("g (x)")
 
     # Converte as estimativas de raízes para seu oposto
     # Isso pode ser feito pois a função escolhida é simétrica
