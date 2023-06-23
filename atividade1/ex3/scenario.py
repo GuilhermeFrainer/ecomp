@@ -38,8 +38,9 @@ class Scenario:
         self.optimal_location = self.solutions[-1]
 
     # Encontra custo mínimo na localização ótima
-    def find_minimal_cost(self):
+    def find_minimal_cost(self) -> float:
         self.minimal_cost = 0
         for market in self.markets:
             self.minimal_cost += market.weight * np.linalg.norm(self.optimal_location - market.coord)
+        return self.minimal_cost
 

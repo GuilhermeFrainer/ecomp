@@ -26,13 +26,12 @@ INITIAL_POSITION = (200, 200)
 
 
 def main():
+    # Reposta (a)
     # Salva os cenários (i), (ii) e (iii)
     scenarios = [Scenario(POSITIONS, scenario) for scenario in SCENARIOS]
-    for scenario in scenarios:
+    for (i, scenario) in enumerate(scenarios):
         scenario.find_optimal_location(INITIAL_POSITION, MAX_ERROR, MAX_ITERATIONS)
-        print(scenario)
-        scenario.find_minimal_cost()
-        print(f"Custo mínimo: {scenario.minimal_cost}")
+        print(f"({'i' * (i + 1)}): {scenario}")
 
     figure = plt.figure("Exercício 3a")
     axis = figure.add_subplot(111)
@@ -46,6 +45,17 @@ def main():
     for (i, (x, y)) in enumerate(zip(x_pos, y_pos)):
         axis.plot(x, y, marker='o', color="#0000ff")
         axis.annotate(f"$x_{i + 1}$", xy=(x, y), xytext=(x + 10, y))
+
+    # Coloca localizações ótimas no gráfico
+    for (i, scenario) in enumerate(scenarios):
+        x, y = scenario.optimal_location[0], scenario.optimal_location[1]
+        axis.plot(x, y, marker='o', color="#ff0000")
+        axis.annotate(f"({'i' * (i + 1)})", xy=(x, y), xytext=(x + 10, y), color="#ff0000")
+
+    # Resposta (b)
+    # Calcula e printa os custos mínimos
+    for (i, scenario) in enumerate(scenarios):
+        print(f"Custo mínimo ({'i' * (i + 1)}): {scenario.find_minimal_cost()}")
 
     figure.savefig("Exercício 3a.png")
 
