@@ -20,7 +20,7 @@ class Scenario:
     def find_optimal_location(self, initial_condition: tuple[float], max_error: float, max_iterations: int):
         self.solutions = [np.array([initial_condition], dtype=np.float64)]
 
-        error = 1
+        error = 10 * max_error
         i = 1
         while error > max_error and i < max_iterations:
             curr_solution_numerator = np.array([0, 0]).astype('float')
@@ -42,3 +42,4 @@ class Scenario:
         self.minimal_cost = 0
         for market in self.markets:
             self.minimal_cost += market.weight * np.linalg.norm(self.optimal_location - market.coord)
+
