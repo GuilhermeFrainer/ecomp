@@ -24,11 +24,13 @@ def main():
     
     results = [2 * taylor_series_sin_x(decimal.Decimal(X), test_case) for test_case in N_TEST_CASES]
     errors = [get_relative_error(result, TARGET_VALUE) for result in results]
+    sqrt_of_two = [math.sqrt(2) for _ in range(3)]
     
     # Resposta (a)
     print("Resposta (a) com 20 casas decimais")
     print(tabulate({
         "n": N_TEST_CASES,
+        "Valor": sqrt_of_two,
         "Aproximação": results,
         "Erro (%)": errors
         },
