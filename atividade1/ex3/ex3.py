@@ -42,6 +42,21 @@ def main():
         scenario.find_optimal_location(INITIAL_POSITION, MAX_ERROR, MAX_ITERATIONS)
         print(f"({'i' * (i + 1)}): {scenario}")
 
+    # Printa localização ótima em cada cenário com 4 algarismos significativos
+    estimated_locations = [scenario.optimal_location.tolist() for scenario in scenarios]
+    estimated_x = [est[0] for est in estimated_locations]
+    estimated_y = [est[1] for est in estimated_locations]
+
+    print("Localização ótima por cenário")
+    print(tabulate({
+        "Cenário": ["(i)", "(ii)", "(iii)"],
+        "x": estimated_x,
+        "y": estimated_y
+        },
+        floatfmt=".4g",
+        headers="keys"
+    ))
+
     figure = plt.figure("Exercício 3a")
     axis = figure.add_subplot(111)
 
@@ -66,10 +81,10 @@ def main():
     # Resposta (b)
     # Calcula e printa os custos mínimos
     for (i, scenario) in enumerate(scenarios):
-        print(f"Custo mínimo ({'i' * (i + 1)}): {scenario.find_minimal_cost()}")
+        print(f"Custo mínimo ({'i' * (i + 1)}): {scenario.find_minimal_cost():.10g}")
 
     # Resposta (c)
-    # Como equivalente de 'fminsearch()', usou-se scipy.optmizie.fmin
+    # Como equivalente de 'fminsearch()', usou-se scipy.optmizie.minimize
     # Ambas usam o mesmo método (Nelder-Mead) para encontrar o ponto de ótimo
     opt_results = []
     for scenario in scenarios:
@@ -78,21 +93,29 @@ def main():
 
     # Extrai localizações das otimizações
     opt_loc = [result.x.tolist() for result in opt_results]
-    estimated_locations = [scenario.optimal_location.tolist() for scenario in scenarios]
+    opt_loc_x = [loc[0] for loc in opt_loc]
+    opt_loc_y = [loc[1] for loc in opt_loc]
 
     # Calcula erro relativo percentual
     errors = []
     for (loc, estimate) in zip(opt_loc, estimated_locations):
         errors.append([get_relative_error(estimate[0], loc[0]), get_relative_error(estimate[1], loc[1])])
 
-    print("Compração localização")
+    errors_x = [error[0] for error in errors]
+    errors_y = [error[1] for error in errors]
+
+    print("Comparação localização com 10 algarismos significativos")
     print(tabulate({
             "Cenário": ["(i)", "(ii)", "(iii)"],
-            "Estimativa localização ótima": estimated_locations,
-            "Resultado scipy": opt_loc,
-            "Erro (%)": errors
+            "Estimativa x": estimated_x,
+            "Estimativa y": estimated_y,
+            "Resultado scipy x": opt_loc_x,
+            "Resultado scipy y": opt_loc_y,
+            "Erro x (%)": errors_x,
+            "Erro y (%)": errors_y,
         },
-        headers="keys"
+        headers="keys",
+        floatfmt=".10g"
     ))
 
     # Resposta (d)

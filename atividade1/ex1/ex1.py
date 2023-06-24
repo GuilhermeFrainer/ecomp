@@ -27,7 +27,7 @@ def main():
     sqrt_of_two = [math.sqrt(2) for _ in range(3)]
     
     # Resposta (a)
-    print("Resposta (a) com 20 casas decimais")
+    print("Resposta (a) com 10 algarismos significativos de precisão")
     print(tabulate({
         "n": N_TEST_CASES,
         "Valor": sqrt_of_two,
@@ -35,7 +35,7 @@ def main():
         "Erro (%)": errors
         },
         headers="keys",
-        floatfmt=".20f"
+        floatfmt=".10g"
     ))
     
     # Resposta (b)

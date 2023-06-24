@@ -7,6 +7,7 @@ import math
 
 INITIAL_CONDITION = 1
 MAX_ITERATIONS = 100
+SIGNIFICANT_DIGITS = 5
 MAX_ERROR = 10 ** -5
 
 
@@ -38,7 +39,7 @@ def main():
         "Raízes estimadas": estimated_roots,
         },
         headers="keys",
-        floatfmt=".5f"
+        floatfmt=f".{SIGNIFICANT_DIGITS}g"
     ))
 
 
