@@ -2,6 +2,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import math
+import scipy.optimize as opt
+from tabulate import tabulate
 
 # Arquivos internos
 from scenario import Scenario
@@ -67,7 +69,31 @@ def main():
         print(f"Custo mínimo ({'i' * (i + 1)}): {scenario.find_minimal_cost()}")
 
     # Resposta (c)
-    # TODO -> procurar equivalente de 'fminsearch()' no Python
+    # Como equivalente de 'fminsearch()', usou-se scipy.optmizie.fmin
+    # Ambas usam o mesmo método (Nelder-Mead) para encontrar o ponto de ótimo
+    opt_results = []
+    for scenario in scenarios:
+        cost_function = lambda x: sum([market.weight * np.linalg.norm(market.coord - x) for market in scenario.markets])
+        opt_results.append(opt.minimize(cost_function, np.array(INITIAL_POSITION)))
+
+    # Extrai localizações das otimizações
+    opt_loc = [result.x.tolist() for result in opt_results]
+    estimated_locations = [scenario.optimal_location.tolist() for scenario in scenarios]
+
+    # Calcula erro relativo percentual
+    errors = []
+    for (loc, estimate) in zip(opt_loc, estimated_locations):
+        errors.append([get_relative_error(estimate[0], loc[0]), get_relative_error(estimate[1], loc[1])])
+
+    print("Compração localização")
+    print(tabulate({
+            "Cenário": ["(i)", "(ii)", "(iii)"],
+            "Estimativa localização ótima": estimated_locations,
+            "Resultado scipy": opt_loc,
+            "Erro (%)": errors
+        },
+        headers="keys"
+    ))
 
     # Resposta (d)
     figure = plt.figure("Exercício 3d")
@@ -118,6 +144,11 @@ def find_minimal_cost(x: float, y: float, scenario: Scenario) -> float:
     for market in scenario.markets:
         cost += market.weight * np.linalg.norm(point - market.coord)
     return cost
+
+
+# Calcula o erro relativo percentual
+def get_relative_error(estimate: float, real_value: float) -> float:
+    return (real_value - estimate) / real_value * 100
 
 
 if __name__ == "__main__":
