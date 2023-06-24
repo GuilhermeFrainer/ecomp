@@ -24,12 +24,13 @@ MAX_ITERATIONS = 1000
 MAX_ERROR = 10 ** -5
 INITIAL_POSITION = (200, 200)
 
+# Isodapanas
 ISOTIMS = [
     100,
     500,
     1000
 ]
-
+ISOTIM_LABELS = [r"$C_{min}$" + f"$ + {value}$" for value in ISOTIMS]
 
 def main():
     # Reposta (a)
@@ -70,17 +71,44 @@ def main():
 
     # Resposta (d)
     figure = plt.figure("Exercício 3d")
-    axis = figure.add_subplot(111)
     X = np.linspace(-300, 1250, 100)
     Y = np.linspace(-400, 1150, 100)
 
-    Z = np.array([[find_minimal_cost(x, y, scenarios[0]) for x in X] for y in Y])
+    for (i, scenario) in enumerate(scenarios):
+        axis = figure.add_subplot(310 + 1 + i)
+        Z = np.array([[find_minimal_cost(x, y, scenario) for x in X] for y in Y])
+        
+        levels = [scenario.minimal_cost + isotim for isotim in ISOTIMS]
+        contours = axis.contour(X, Y, Z, levels=levels)
 
-    # THIS WORKS!!!!
-    levels = [scenarios[0].minimal_cost + isotim for isotim in ISOTIMS]
-    axis.contour(X, Y, Z, levels=levels)
+        # Coloca legendas para isodapanas
+        fmt = {}
+        for (i, contour) in enumerate(contours.levels):
+            fmt[contour] = ISOTIM_LABELS[i]
+        axis.clabel(contours, levels=levels, fmt=fmt)
 
+        # Desenha triâgulo locacional e identifica localização ótima
+        plot_triangle(axis)
+        axis.plot(
+            scenario.optimal_location[0],
+            scenario.optimal_location[1],
+            marker='o',
+            color="#ff0000",
+            label="Localização ótima"
+        )
+        axis.legend()
+
+    # Aumenta a figura
+    figure.set_figheight(15)
+    figure.set_figwidth(8)
     figure.savefig("Exercício 3d.png")
+
+
+# Desenha o triângulo locacional de Weber
+def plot_triangle(axis: plt.Axes):
+    x_pos = [pos[0] for pos in POSITIONS]
+    y_pos = [pos[1] for pos in POSITIONS]
+    axis.fill(x_pos, y_pos, fill=False, color="#0000ff")
 
 
 # Encontra custo mínimo a partir de x e y
