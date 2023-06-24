@@ -11,7 +11,7 @@ from scenario import Scenario
 POSITIONS = [
     (100, 100),
     (900, 100),
-    (500, 100 + math.sqrt(800 ** 2) - math.sqrt(400 ** 2))
+    (500, 100 + math.sqrt(800 ** 2 - 400 ** 2))
 ]
 
 WEIGHTS_1 = [1, 1, 1]
@@ -23,6 +23,12 @@ SCENARIOS = [WEIGHTS_1, WEIGHTS_2, WEIGHTS_3]
 MAX_ITERATIONS = 1000
 MAX_ERROR = 10 ** -5
 INITIAL_POSITION = (200, 200)
+
+ISOTIMS = [
+    100,
+    500,
+    1000
+]
 
 
 def main():
@@ -52,12 +58,38 @@ def main():
         axis.plot(x, y, marker='o', color="#ff0000")
         axis.annotate(f"({'i' * (i + 1)})", xy=(x, y), xytext=(x + 10, y), color="#ff0000")
 
+    figure.savefig("Exercício 3a.png")
+
     # Resposta (b)
     # Calcula e printa os custos mínimos
     for (i, scenario) in enumerate(scenarios):
         print(f"Custo mínimo ({'i' * (i + 1)}): {scenario.find_minimal_cost()}")
 
-    figure.savefig("Exercício 3a.png")
+    # Resposta (c)
+    # TODO -> procurar equivalente de 'fminsearch()' no Python
+
+    # Resposta (d)
+    figure = plt.figure("Exercício 3d")
+    axis = figure.add_subplot(111)
+    X = np.linspace(-300, 1250, 100)
+    Y = np.linspace(-400, 1150, 100)
+
+    Z = np.array([[find_minimal_cost(x, y, scenarios[0]) for x in X] for y in Y])
+
+    # THIS WORKS!!!!
+    levels = [scenarios[0].minimal_cost + isotim for isotim in ISOTIMS]
+    axis.contour(X, Y, Z, levels=levels)
+
+    figure.savefig("Exercício 3d.png")
+
+
+# Encontra custo mínimo a partir de x e y
+def find_minimal_cost(x: float, y: float, scenario: Scenario) -> float:
+    point = np.array([x, y])
+    cost = 0
+    for market in scenario.markets:
+        cost += market.weight * np.linalg.norm(point - market.coord)
+    return cost
 
 
 if __name__ == "__main__":
