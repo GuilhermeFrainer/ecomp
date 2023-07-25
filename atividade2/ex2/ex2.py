@@ -23,15 +23,21 @@ MARKET_POSITIONS = [
     [900, 100],
     [500, 100 + math.sqrt(800 ** 2 - 400 ** 2)]
 ]
-MARKET_WEIGHTS = [1, 1, 1]
+SCENARIOS = [
+    [1, 1, 1],
+    [1.5, 1, 1],
+    [1, 1.7, 1]
+]
 LOWER_BOUND = [100, 100]
 UPPER_BOUND = [900, 100 + math.sqrt(800 ** 2 - 400 ** 2)]
 
 
 def main():
-    markets = [Market(MARKET_POSITIONS[i], MARKET_WEIGHTS[i]) for i in range(3)]
-    g_best, g_best_value = solve_by_pso(cost_function, LOWER_BOUND, UPPER_BOUND, [markets])
-    print(f"x: {g_best}\nf: {g_best_value}")
+    for (j, s) in enumerate(SCENARIOS):
+        markets = [Market(MARKET_POSITIONS[i], w) for (i, w) in enumerate(s)]
+        g_best, g_best_value = solve_by_pso(cost_function, LOWER_BOUND, UPPER_BOUND, [markets])
+        print(f"Cenário: {j + 1}")
+        print(f"x: {g_best}\nf: {g_best_value}")
     return
 
 
