@@ -10,24 +10,30 @@ MAX_ITERATIONS = 100
 STARTING_N = 0.1
 
 def main():
-    x_axis = np.linspace(0, 2, 1000)
+    x_axis = np.linspace(0, 2, 100)
     
     # (i)
-    f1 = lambda x: B / (1 - min(ALPHA * x, MAX_N))
+    f1 = lambda x: min(ALPHA * x, MAX_N)
     f1_series = pred_function(f1)
 
     # (ii)
-    f2 = lambda x: B / (1 - min(ALPHA * math.sqrt(x), MAX_N))
+    f2 = lambda x: min(ALPHA * math.sqrt(x), MAX_N)
     f2_series = pred_function(f2)
     # (iii)
-    f3 = lambda x: B / (1 - min(ALPHA * math.pow(x, 2), MAX_N))
+    f3 = lambda x: min(ALPHA * math.pow(x, 2), MAX_N)
     f3_series = pred_function(f3)
 
+    iterations = [i for i in range(MAX_ITERATIONS + 1)]
 
-    
+    figure = plt.figure("Exercício 1a")
+
+    axis = figure.add_subplot(111)
+    axis.plot(iterations, f2_series)
+
+    plt.show()
 
 
-# Calcula o modelo de Pred
+# Calcula série temporal do modelo de Pred dada uma função para n_t
 def pred_function(func: Callable) -> list[float]:
     pred_list = [B / (1 - STARTING_N)]
     
