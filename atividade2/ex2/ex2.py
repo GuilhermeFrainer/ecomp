@@ -17,10 +17,11 @@ MAX_ITERATIONS = 1000
 INDIVIDUAL_LEARNING = 2
 GROUP_LEARNING = 2
 MAX_VELOCITY = 5
+MAX_VARIANCE = 10 ** -4 # Critério de parada
 
 
 def main():
-    g_best, g_best_value = solve_by_pso(rosenbrock)
+    g_best, g_best_value = solve_by_pso(rosenbrock, LOWER_BOUND, UPPER_BOUND)
     print(f"x: {g_best}\nf: {g_best_value}")
     return
 
@@ -31,14 +32,15 @@ def rosenbrock(x: np.ndarray):
 
 
 # Encontra o mínimo de func pelo método do PSO
-def solve_by_pso(func: Callable) -> tuple[np.ndarray, float]:
+def solve_by_pso(func: Callable, lower_bound: list[float], upper_bound: list[float]) -> tuple[np.ndarray, float]:
     Particle.max_velocity = MAX_VELOCITY
     
     # Inicializa enxame
     particles: list[Particle] = []
     for _ in range(SWARM_SIZE):
-        x = float(random.randrange(LOWER_BOUND[0], UPPER_BOUND[0]))
-        y = float(random.randrange(LOWER_BOUND[1], UPPER_BOUND[1]))
+        # Inicializa no retângulo entre LOWER_BOUND e UPPER_BOUND
+        x = float(random.randrange(lower_bound[0], upper_bound[0]))
+        y = float(random.randrange(lower_bound[1], upper_bound[1]))
         particles.append(Particle([x, y]))
     
     # Inicializa g_best        
@@ -57,6 +59,10 @@ def solve_by_pso(func: Callable) -> tuple[np.ndarray, float]:
             # Escolhe novo p_best
             if func(p.pos) < func(p.best):
                 p.best = p.pos.copy()
+
+        # Critério de parada
+        if np.var([func(p.best) for p in particles]) < MAX_VARIANCE:
+            break
     
     return g_best, func(g_best)
 
