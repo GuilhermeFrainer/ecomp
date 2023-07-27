@@ -14,6 +14,7 @@ class Particle:
         self.vel = np.array([0.0, 0.0])
 
 
+    # Usado apenas para testes.
     def __repr__(self):
         return f"{np.round(self.pos, decimals=3)}"
 
