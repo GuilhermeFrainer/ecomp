@@ -91,7 +91,7 @@ def solve_by_pso(func: Callable, lower_bound: list[float], upper_bound: list[flo
     g_best = particles[0].best.copy()
 
     # Roda o algoritmo
-    for i in range(MAX_ITERATIONS):
+    for _ in range(MAX_ITERATIONS):
         # Encontra novo g_best
         for p in particles:
             if func(p.best, *args) < func(g_best, *args):

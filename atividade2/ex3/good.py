@@ -22,3 +22,4 @@ class Good:
     # Preço pago pela firma por unidade de insumo.
     def get_price_for_input(self, destination: np.ndarray) -> float:
         return self.fob + self.transport_cost * np.linalg.norm(self.pos - destination)
+    
