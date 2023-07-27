@@ -51,7 +51,8 @@ def main():
     input2 = Good(INPUT_2_PRICE, INPUT_2_POS, INPUT_2_TRANSPORT_COST)
     firm = Firm(product, [input1, input2])
 
-    g_best, g_best_values = solve_by_pso(moses_profit, LOWER_BOUND, UPPER_BOUND, [firm])
+    f = lambda x, firm: -moses_profit(x, firm) # Maximiza encontrando o mínimo de -f(x)
+    g_best, g_best_values = solve_by_pso(f, LOWER_BOUND, UPPER_BOUND, [firm])
     print(f"Localização ótima: {g_best}\nLucro ótimo: {g_best_values[-1]}\nIterações: {len(g_best_values)}")
 
     # Custo de transporte total: como?
@@ -63,13 +64,17 @@ def main():
     X = np.linspace(-300, 1250, 100)
     Y = np.linspace(-400, 1150, 100)
     Z = np.array([[moses_profit(np.array([x, y]), firm) for x in X] for y in Y])
-    
-    #contours = plt.contour(X, Y, Z)
+
+    fig, ax = plt.subplots()
+    ax.contour(X, Y, Z)
+    plt.show()
+    fig.savefig("Mapa de contorno lucro.png")
 
     # Gráfico de convergência
-    plt.plot(g_best_values, 'ob')
-
+    fig, ax = plt.subplots()
+    ax.plot(g_best_values, 'ob')
     plt.show()
+    fig.savefig("Gráfico de convergência.png")
 
 
 # Função de lucro no modelo de Moses.
@@ -80,8 +85,8 @@ def moses_profit(pos: np.ndarray, firm: Firm) -> float:
     return K * math.pow(firm.product.get_revenue_from_good(pos) / denominator, 1 / GAMMA)
 
 
-# Encontra o máximo de func pelo método do PSO.
-# Função idêntica à do exercício 2, só muda a desigualdade
+# Encontra o mínimo de func pelo método do PSO.
+# Não foi necessário adaptar o método do exercício 2.
 def solve_by_pso(func: Callable, lower_bound: list[float], upper_bound: list[float], args=()) -> tuple[np.ndarray, list[float], int]:
     Particle.max_velocity = MAX_VELOCITY
     g_best_values = [] # Guarda histórico do valor em g_best
@@ -101,14 +106,14 @@ def solve_by_pso(func: Callable, lower_bound: list[float], upper_bound: list[flo
     for _ in range(MAX_ITERATIONS):
         # Encontra novo g_best
         for p in particles:
-            if func(p.best, *args) > func(g_best, *args):
+            if func(p.best, *args) < func(g_best, *args):
                 g_best = p.best.copy()
         
         for p in particles:
             p.update_velocity(g_best, INDIVIDUAL_LEARNING, GROUP_LEARNING)
             p.pos += p.vel # Move a partícula
             # Escolhe novo p_best
-            if func(p.pos, *args) > func(p.best, *args):
+            if func(p.pos, *args) < func(p.best, *args):
                 p.best = p.pos.copy()
 
         # Salva valor em g_best
