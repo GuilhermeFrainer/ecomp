@@ -53,7 +53,7 @@ def main():
 
     f = lambda x, firm: -moses_profit(x, firm) # Maximiza encontrando o mínimo de -f(x)
     g_best, g_best_values = solve_by_pso(f, LOWER_BOUND, UPPER_BOUND, [firm])
-    print(f"Localização ótima: {g_best}\nLucro ótimo: {g_best_values[-1]}\nIterações: {len(g_best_values)}")
+    print(f"Localização ótima: {g_best}\nLucro ótimo: {-g_best_values[-1]}\nIterações: {len(g_best_values)}")
 
     # Custo de transporte total: como?
 

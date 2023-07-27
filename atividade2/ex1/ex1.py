@@ -22,14 +22,41 @@ def main():
     # (iii)
     f3 = lambda x: min(ALPHA * math.pow(x, 2), MAX_N)
 
-    f1_series = [pred(b, f1) for b in B]
-    f2_series = [pred(b, f2) for b in B]
-    f3_series = [pred(b, f3) for b in B]
+    # Salva equilíbrios de longo prazo em função de B
+    f_series = [
+        [pred(b, f1) for b in B],
+        [pred(b, f2) for b in B],
+        [pred(b, f3) for b in B]
+    ]
     
-    plt.plot(B, f1_series, 'ob')
-    #plt.plot(B, f2_series)
-    #plt.plot(B, f3_series)
+    # Apresenta gráfico do equilíbrio de longo prazo em função de B
+    fig, axs = plt.subplots(3)
+    for (i, ax) in enumerate(axs):
+        ax.plot(B, f_series[i], 'ob')
+        ax.set_title(f'({(i + 1) * "i"})')
+
     plt.show()
+    fig.savefig("Equilíbrios de longo prazo.png")
+
+    # (iv)
+    T = np.linspace(0, 2)
+    nt_series = [
+        [f1(t) for t in T],
+        [f2(t) for t in T],
+        [f3(t) for t in T]
+    ]
+    fig, axs = plt.subplots()
+    labels = [
+        '$min\{\\alpha T_t, \\bar{n}\}$',
+        '$min\{\\alpha\\sqrt{T_t}, \\bar{n}\}$',
+        '$min\{\\alpha T_t^2, \\bar{n}\}$'
+    ]
+    for (i, series) in enumerate(nt_series):
+        axs.plot(T, series, label=labels[i])
+
+    axs.legend()
+    plt.show()
+    fig.savefig("Funções nt.png")
 
 
 # Retorna T_inf para um determinado B e uma função para n_t
