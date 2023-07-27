@@ -118,6 +118,12 @@ def solve_by_pso(func: Callable, lower_bound: list[float], upper_bound: list[flo
 def format_array(array: np.ndarray, significant_digits: int) -> list[str]:
     return [f"{x:.{significant_digits}g}" for x in array]
 
+
+# Usado para formatar conteúdo de array para N algarismos significativos.
+def format_array(array: np.ndarray, significant_digits: int) -> list[str]:
+    return [f"{x:.{significant_digits}g}" for x in array]
+
+
 if __name__ == "__main__":
     main()
 
