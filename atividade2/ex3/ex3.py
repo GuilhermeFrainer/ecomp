@@ -1,5 +1,6 @@
 # Bibliotecas externas
 import numpy as np
+import matplotlib.pyplot as plt
 
 # Bibliotecas internas
 import math
@@ -51,7 +52,24 @@ def main():
     firm = Firm(product, [input1, input2])
 
     g_best, g_best_values = solve_by_pso(moses_profit, LOWER_BOUND, UPPER_BOUND, [firm])
-    print(f"x: {g_best}\nf: {g_best_values[-1]}\nIterações: {len(g_best_values)}")
+    print(f"Localização ótima: {g_best}\nLucro ótimo: {g_best_values[-1]}\nIterações: {len(g_best_values)}")
+
+    # Custo de transporte total: como?
+
+    # Gráfico da função lucro
+    # Dúvida: gráfico em função de que?
+
+    # Mapa de contorno
+    X = np.linspace(-300, 1250, 100)
+    Y = np.linspace(-400, 1150, 100)
+    Z = np.array([[moses_profit(np.array([x, y]), firm) for x in X] for y in Y])
+    
+    #contours = plt.contour(X, Y, Z)
+
+    # Gráfico de convergência
+    plt.plot(g_best_values, 'ob')
+
+    plt.show()
 
 
 # Função de lucro no modelo de Moses.
