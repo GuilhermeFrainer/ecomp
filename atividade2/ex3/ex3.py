@@ -1,6 +1,7 @@
 # Bibliotecas externas
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib import cm
 
 # Bibliotecas internas
 import math
@@ -55,10 +56,12 @@ def main():
     g_best, g_best_values = solve_by_pso(f, LOWER_BOUND, UPPER_BOUND, [firm])
     print(f"Localização ótima: {g_best}\nLucro ótimo: {-g_best_values[-1]}\nIterações: {len(g_best_values)}")
 
-    # Custo de transporte total: como?
+    # Custo de transporte total
+    total_transport_cost = np.linalg.norm(g_best - firm.product.pos) * firm.product.transport_cost
+    for inp in firm.inputs:
+        total_transport_cost += np.linalg.norm(g_best - inp.pos) * inp.transport_cost
 
-    # Gráfico da função lucro
-    # Dúvida: gráfico em função de que?
+    print(f"Custo de transporte total: {total_transport_cost}")
 
     # Mapa de contorno
     X = np.linspace(-300, 1250, 100)
@@ -69,6 +72,14 @@ def main():
     ax.contour(X, Y, Z)
     plt.show()
     fig.savefig("Mapa de contorno lucro.png")
+
+    # Gráfico função lucro
+    X, Y = np.meshgrid(X, Y)
+    fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
+    surf = ax.plot_surface(X, Y, Z, cmap=cm.coolwarm)
+    fig.colorbar(surf, shrink=0.5, aspect=5)
+    plt.show()
+    fig.savefig("Gráfico função lucro.png")
 
     # Gráfico de convergência
     fig, ax = plt.subplots()
