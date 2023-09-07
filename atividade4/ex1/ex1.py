@@ -4,11 +4,11 @@ import scipy.optimize as opt
 
 
 # Parâmetros do problema
-T0 = 300
-T1 = 400
+INITIAL_CONDITION = 300
+FINAL_CONDITION = 400
 
 # Parâmetros do método
-Z_GUESS = -13.2075
+Z_GUESS = -20.2075
 X_START = 0
 X_STOP = 10
 X_NUM = 10000 # Aumentar para uma comparação mais precisa
@@ -18,11 +18,12 @@ TOLERANCE = 1e-3
 
 def main():
     x_space = np.linspace(X_START, X_STOP, X_NUM)
+    # [x, y, z]
     dz = lambda args: -0.05 * (200 - args[0])
-    dT = lambda args: args[1]
-    solution = solve_by_shooting(Z_GUESS, x_space, STEP, T0, T1, dz, dT)
-    print(f"Final T: {solution}")
-    print(f"Outra solução: T: {residue(Z_GUESS, T1, x_space, STEP, T0, dz, dT)}")
+    dy = lambda args: args[1]
+    solution = solve_by_shooting(Z_GUESS, x_space, STEP, INITIAL_CONDITION, FINAL_CONDITION, dz, dy)
+    print(f"Chute que resolve problema: {solution}")
+    print(f"T final por esse chute: {attempt_shooting(solution, x_space, STEP, INITIAL_CONDITION, dz, dy)}")
 
 
 # Resolve PVC pelo método do tiro
@@ -38,20 +39,20 @@ def solve_by_shooting(initial_guess: float, *args) -> float:
     step : float
     initial_condition : float
     final_condition : float
-    func1 : callable ``f(x)``
-        Equação 1
-    func2 : callable ``f(x)``
-        Equação 2
+    target_function : callable ``f(x)``
+        Equação do problema.
+    mock_function : callable ``f(x)``
+        Equação criada para resolver o problema.
 
     Retorna
     --------
     x : float
         "Chute" que resolve PVC.
     """
-    x_space, step, initial_condition, final_condition, func1, func2 = args
+    x_space, step, initial_condition, final_condition, target_function, mock_function = args
     
     # Tenta resolver PVC com chute inicial
-    solution = attempt_shooting(initial_guess, x_space, step, initial_condition, func1, func2)
+    solution = attempt_shooting(initial_guess, x_space, step, initial_condition, target_function, mock_function)
 
     # Retorna o chute inicial caso seja bem-sucedido
     if np.isclose(solution, final_condition, rtol=TOLERANCE):
@@ -60,7 +61,9 @@ def solve_by_shooting(initial_guess: float, *args) -> float:
     # minimiza erro. Sugestão de CHAPRA (2018) para PVCs em sistemas de equações diferenciais
     # não-lineares.
     else:
-        return "Fracasso"
+        func_args = (x_space, step, initial_condition, final_condition, target_function, mock_function)
+        scipy_solution = opt.fsolve(residue, initial_guess, args=func_args)
+        return scipy_solution
 
 
 def attempt_shooting(initial_guess: float, *args) -> float:
@@ -73,30 +76,30 @@ def attempt_shooting(initial_guess: float, *args) -> float:
         Intervalo delimitado pelos "valores de contorno".
     step : float
     initial_condition : float
-    func1 : callable ``f(x)``
-        Equação 1
-    func2 : callable ``f(x)``
-        Equação 2
+    target_function : callable ``f(x)``
+        Equação do problema.
+    mock_function : callable ``f(x)``
+        Equação criada para resolver o problema.
 
     Retorna
     --------
     x : float
         Solução. Retorna valor a ser comparado com as condições de contorno.
     """
-    x_space, step, initial_condition, func1, func2 = args
+    x_space, step, initial_condition, target_function, mock_function = args
     var_history = [[initial_condition, initial_guess]]
     for (i, _) in enumerate(x_space):
-        next_z = euler.iterate(var_history[i], var_history[i][1], step, func1)
-        next_t = euler.iterate(var_history[i], var_history[i][0], step, func2)
+        next_z = euler.iterate(var_history[i], var_history[i][1], step, target_function)
+        next_t = euler.iterate(var_history[i], var_history[i][0], step, mock_function)
         var_history.append([next_t, next_z])
     return var_history[-1][0]
 
 
 # Função de erro a ser minimizada pelo scipy.optimize.fsolve().
 # Apenas chama 'attempt shooting' e subtrai pelo valor na condição de contorno.
-def residue(initial_guess: float, final_condition: float, *args) -> float:
-    x_space, step, initial_condition, func1, func2 = args
-    attempt_result = attempt_shooting(initial_guess, x_space, step, initial_condition, func1, func2)
+def residue(initial_guess: float, *args) -> float:
+    x_space, step, initial_condition, final_condition, target_function, mock_function = args
+    attempt_result = attempt_shooting(initial_guess, x_space, step, initial_condition, target_function, mock_function)
     return attempt_result - final_condition
 
 
