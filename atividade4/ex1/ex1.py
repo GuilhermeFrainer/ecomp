@@ -4,7 +4,7 @@ import scipy.optimize as opt
 
 
 # Parâmetros do problema
-INITIAL_CONDITION = 300
+INITIAL_Y = 300
 FINAL_CONDITION = 400
 
 # Parâmetros do método
@@ -19,11 +19,11 @@ TOLERANCE = 1e-3
 def main():
     x_space = np.linspace(X_START, X_STOP, X_NUM)
     # [x, y, z]
-    dz = lambda args: -0.05 * (200 - args[0])
-    dy = lambda args: args[1]
-    solution = solve_by_shooting(Z_GUESS, x_space, STEP, INITIAL_CONDITION, FINAL_CONDITION, dz, dy)
+    dz = lambda args: -0.05 * (200 - args[1])
+    dy = lambda args: args[2]
+    solution = solve_by_shooting(Z_GUESS, x_space, STEP, INITIAL_Y, FINAL_CONDITION, dz, dy)
     print(f"Chute que resolve problema: {solution}")
-    print(f"T final por esse chute: {attempt_shooting(solution, x_space, STEP, INITIAL_CONDITION, dz, dy)}")
+    print(f"T final por esse chute: {attempt_shooting(solution, x_space, STEP, INITIAL_Y, dz, dy)}")
 
 
 # Resolve PVC pelo método do tiro
@@ -87,12 +87,12 @@ def attempt_shooting(initial_guess: float, *args) -> float:
         Solução. Retorna valor a ser comparado com as condições de contorno.
     """
     x_space, step, initial_condition, target_function, mock_function = args
-    var_history = [[initial_condition, initial_guess]]
-    for (i, _) in enumerate(x_space):
-        next_z = euler.iterate(var_history[i], var_history[i][1], step, target_function)
-        next_t = euler.iterate(var_history[i], var_history[i][0], step, mock_function)
-        var_history.append([next_t, next_z])
-    return var_history[-1][0]
+    var_history = [[X_START, initial_condition, initial_guess]]
+    for (i, x) in enumerate(x_space):
+        next_z = euler.iterate(var_history[i], var_history[i][2], step, target_function)
+        next_y = euler.iterate(var_history[i], var_history[i][1], step, mock_function)
+        var_history.append([x, next_y, next_z])
+    return var_history[-1][1]
 
 
 # Função de erro a ser minimizada pelo scipy.optimize.fsolve().
