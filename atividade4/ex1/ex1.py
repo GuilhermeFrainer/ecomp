@@ -4,13 +4,13 @@ import scipy.optimize as opt
 
 
 # Parâmetros do problema
-INITIAL_Y = 300
-FINAL_CONDITION = 400
+INITIAL_Y = 0.5
+FINAL_CONDITION = np.log(2)
 
 # Parâmetros do método
-Z_GUESS = -20.2075
-X_START = 0
-X_STOP = 10
+Z_GUESS = -20
+X_START = 1
+X_STOP = 2
 X_NUM = 10000 # Aumentar para uma comparação mais precisa
 STEP = (X_STOP - X_START) / X_NUM
 TOLERANCE = 1e-3
@@ -19,11 +19,12 @@ TOLERANCE = 1e-3
 def main():
     x_space = np.linspace(X_START, X_STOP, X_NUM)
     # [x, y, z]
-    dz = lambda args: -0.05 * (200 - args[1])
+    dz = lambda args: 2 * np.log(args[0]) / np.power(args[0], 2) - 2 * args[1] / np.power(args[0], 2) - 4 * args[2] / args[0]
     dy = lambda args: args[2]
     solution = solve_by_shooting(Z_GUESS, x_space, STEP, INITIAL_Y, FINAL_CONDITION, dz, dy)
     print(f"Chute que resolve problema: {solution}")
     print(f"T final por esse chute: {attempt_shooting(solution, x_space, STEP, INITIAL_Y, dz, dy)}")
+    print(f"ln(2): {np.log(2)}")
 
 
 # Resolve PVC pelo método do tiro
