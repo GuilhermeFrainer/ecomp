@@ -40,7 +40,8 @@ def solve_by_shooting(initial_guess: float, *args) -> float:
     else:
         func_args = (x_space, step, initial_condition, final_condition, target_function, mock_function)
         scipy_solution = opt.fsolve(residue, initial_guess, args=func_args)
-        return scipy_solution
+        # Devolve "apenas" o primeiro item, pois solução é um array contendo apenas uma variável
+        return scipy_solution[0]
 
 
 def attempt_shooting(initial_guess: float, *args) -> float:
