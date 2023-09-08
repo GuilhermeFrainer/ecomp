@@ -30,22 +30,34 @@ def main():
 
     # (a)
     # Calcula valor pelo método de Euler no intervalo [0, 2] para cada valor encontrado para y''
-    step = 1e-3
-    x_space = np.linspace(1, 2, 1000)
-    sol_vecs = [] # Guarda valores de y calculados no intervalo para cada solução encontrada
-    for (i, sol) in enumerate(solutions):
-        vars = [[1, INITIAL_Y, sol]] # Vetor em que cada entrada é uma lista no formato [x, y, z]
-        for (i, x) in enumerate(x_space[1:]):
-            next_y = vars[i][1] + dy(vars[i]) * step
-            next_z = vars[i][2] + dz(vars[i]) * step
-            vars.append([x, next_y, next_z])
-        sol_vecs.append([y for (x, y, z) in vars])
+    for (j, step) in enumerate(STEP):
+        x_num = int((X_STOP - X_START) / step)
+        x_space = np.linspace(X_START, X_STOP, x_num)
+        sol_vecs = [] # Guarda valores de y calculados no intervalo para cada solução encontrada
+        for sol in solutions:
+            vars = [[1, INITIAL_Y, sol]] # Vetor em que cada entrada é uma lista no formato [x, y, z]
+            for (i, x) in enumerate(x_space[1:]):
+                next_y = vars[i][1] + dy(vars[i]) * step
+                next_z = vars[i][2] + dz(vars[i]) * step
+                vars.append([x, next_y, next_z])
+            sol_vecs.append([y for (x, y, z) in vars])
 
-    for (i, sol) in enumerate(sol_vecs):
-        plt.plot(x_space, sol, label=f"$10^{i + 2}$")
+        for (i, sol) in enumerate(sol_vecs):
+            plt.plot(x_space, sol, label=f"$10^{i + 2}$")
+        
+        plt.legend()
+        plt.title(f"Passo = $10^{j + 2}$")
+        plt.show()
+        plt.savefig(f"Exercício 1a - passo 1e-{j + 2}.png")
+
+    # (b)
+    x_num = int((X_STOP - X_START) / STEP[2])
+    x_space = np.linspace(X_START, X_STOP, x_num)
+    plt.plot(x_space, sol_vecs[2], label="Aproximação")
+    plt.plot(x_space, exact_solution(x_space), label="Solução exata")
     plt.legend()
     plt.show()
-    plt.savefig("Exercício 1.png")
+    plt.savefig("Exercício 1b.png")
     return
 
 
