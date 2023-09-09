@@ -43,12 +43,12 @@ def main():
             sol_vecs.append([y for (x, y, z) in vars])
 
         for (i, sol) in enumerate(sol_vecs):
-            plt.plot(x_space, sol, label=f"$10^{i + 2}$")
+            plt.plot(x_space, sol, label=f"$10^{{-{(i + 2)}}} $")
         
         plt.legend()
-        plt.title(f"Passo = $10^{j + 2}$")
-        plt.show()
+        plt.title(f"Passo = $10^{{-{(j + 2)}}}$")
         plt.savefig(f"Exercício 1a - passo 1e-{j + 2}.png")
+        plt.show()
 
     # (b)
     x_num = int((X_STOP - X_START) / STEP[2])
@@ -56,8 +56,8 @@ def main():
     plt.plot(x_space, sol_vecs[2], label="Aproximação")
     plt.plot(x_space, exact_solution(x_space), label="Solução exata")
     plt.legend()
-    plt.show()
     plt.savefig("Exercício 1b.png")
+    plt.show()
     return
 
 
